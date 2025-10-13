@@ -1,0 +1,90 @@
+#
+# ports and urls:
+# mapproxy    - 8081
+# geoserver   - 8080
+#
+# mapproxy  - http://localhost/mapproxy/demo/
+# geoserver - http://localhost/geoserver/ 
+#
+services:
+  nginx:
+    container_name: gis-nginx
+    image: "nginx"
+    volumes:
+     - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    logging:
+      driver: json-file
+      options:
+        max-size: 100m
+        max-file: '10'
+    restart: always
+    depends_on:
+     - mapproxy
+    ports:
+     - "80:80"
+    networks:
+     - gis-net
+
+# the application will run at http://localhost:81/mapproxy/demo/
+  mapproxy:
+    container_name: mapproxy
+    build:
+      context: mapproxy_build
+    volumes:
+      - ./mapproxy:/mapproxy/config
+      # the cache_data folder needs to be writable for the container
+      # this can be ensured by running `sudo chmod -R a+w cache_data`
+      - /opt/mapproxy/cache_data/:/mapproxy/cache_data
+      # to use a logging config that differs from a default one, mount it to this location:
+      # - ./mapproxy/logging.ini:/mapproxy/config/logging.ini
+      # - ./mapproxy/nginx.conf:/etc/nginx/nginx.conf
+    networks:
+     - gis-net
+
+  postgres:
+    image: postgis/postgis
+    container_name: postgres
+    restart: on-failure
+    healthcheck:
+      test: /usr/bin/pg_isready -U postgres
+      interval: 5s
+      timeout: 10s
+      retries: 120
+    env_file:
+      - ./postgres/postgres.env
+    volumes:
+      - /opt/geoserver/postgre_data:${PGDATA:-/var/lib/postgresql/data}:rw
+      - ./postgres/01-init-user.sh:/docker-entrypoint-initdb.d/01-init-user.sh
+    ports:
+      - 5432
+    networks:
+      - gis-net
+
+  geoserver:
+    image: docker.osgeo.org/geoserver:2.28.x
+    container_name: geoserver
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - ./geoserver/geoserver.env
+    environment:
+      - INSTALL_EXTENSIONS=true
+      - STABLE_EXTENSIONS=monitor,pyramid,printing,metadata
+      - COMMUNITY_EXTENSIONS=monitor-micrometer
+   # Ensure that you have same values in ./geoserver/geoserver.env file !!!
+    volumes:
+      - /opt/geoserver/logs:${GEOSERVER_LOG_DIR:-/opt/geoserver/logs}
+      - /opt/geoserver/data_dir:${GEOSERVER_DATA_DIR:-/opt/geoserver/data_dir}
+      - /opt/geoserver/gwc_config:${GEOWEBCACHE_CONFIG_DIR:-/opt/geoserver/gwc/config/}
+      - /opt/geoserver/gwc:${GEOWEBCACHE_CACHE_DIR:-/opt/geoserver/gwc}
+      - /opt/geoserver/netcfd:${NETCDF_DATA_DIR:-/opt/geoserver/netcdf_data}
+      - /opt/geoserver/grib_cache:${GRIB_CACHE_DIR:-/opt/geoserver/grib_cache}
+#    ports:
+#      - 8080:8080
+    networks:
+      - gis-net
+
+
+networks:
+  gis-net:
