@@ -31,9 +31,10 @@ RUN python -m venv venv && source venv/bin/activate && \
 
 COPY app.py .
 COPY entrypoint.sh .
-COPY config/uwsgi.conf ./config_template/uwsgi.conf
-COPY config/logging.ini ./config_template/logging.ini
-COPY config/mapproxy-example.yaml ./config_template/mapproxy.yaml
+COPY config ./config_template
+#COPY config/uwsgi.conf ./config_template/uwsgi.conf
+#COPY config/logging.ini ./config_template/logging.ini
+#COPY config/mapproxy-example.yaml ./config_template/mapproxy.yaml
 
 USER root
 RUN chmod 0755 app.py entrypoint.sh

@@ -14,7 +14,7 @@ services:
      - ./nginx/nginx.env
     volumes:
      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-     - /var/www/html/:{$WWW_DIR:-/var/www/html/}
+     - /data/www/html:${WWW_DIR:-/var/www/html/}
     logging:
       driver: json-file
       options:
@@ -38,10 +38,15 @@ services:
       - ./mapproxy:/mapproxy/config
       # the cache_data folder needs to be writable for the container
       # this can be ensured by running `sudo chmod -R a+w cache_data`
-      - /opt/mapproxy/cache_data/:/mapproxy/cache_data
+      - /data/mapproxy/cache_data/:/mapproxy/cache_data
       # to use a logging config that differs from a default one, mount it to this location:
       # - ./mapproxy/logging.ini:/mapproxy/config/logging.ini
       # - ./mapproxy/nginx.conf:/etc/nginx/nginx.conf
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+        max-file: "2"
     networks:
      - gis-net
 
@@ -57,7 +62,7 @@ services:
     env_file:
       - ./postgres/postgres.env
     volumes:
-      - /opt/geoserver/postgre_data:${PGDATA:-/var/lib/postgresql/data}:rw
+      - /data/geoserver/postgre_data:${PGDATA:-/var/lib/postgresql/data}:rw
       - ./postgres/01-init-user.sh:/docker-entrypoint-initdb.d/01-init-user.sh
     ports:
       - 5432
@@ -78,12 +83,17 @@ services:
       - COMMUNITY_EXTENSIONS=monitor-micrometer
    # Ensure that you have same values in ./geoserver/geoserver.env file !!!
     volumes:
-      - /opt/geoserver/logs:${GEOSERVER_LOG_DIR:-/opt/geoserver/logs}
-      - /opt/geoserver/data_dir:${GEOSERVER_DATA_DIR:-/opt/geoserver/data_dir}
-      - /opt/geoserver/gwc_config:${GEOWEBCACHE_CONFIG_DIR:-/opt/geoserver/gwc/config/}
-      - /opt/geoserver/gwc:${GEOWEBCACHE_CACHE_DIR:-/opt/geoserver/gwc}
-      - /opt/geoserver/netcfd:${NETCDF_DATA_DIR:-/opt/geoserver/netcdf_data}
-      - /opt/geoserver/grib_cache:${GRIB_CACHE_DIR:-/opt/geoserver/grib_cache}
+      - /data/geoserver/logs:${GEOSERVER_LOG_DIR:-/opt/geoserver/logs}
+      - /data/geoserver/data_dir:${GEOSERVER_DATA_DIR:-/opt/geoserver/data_dir}
+      - /data/geoserver/gwc_config:${GEOWEBCACHE_CONFIG_DIR:-/opt/geoserver/gwc/config/}
+      - /data/geoserver/gwc:${GEOWEBCACHE_CACHE_DIR:-/opt/geoserver/gwc}
+      - /data/geoserver/netcfd:${NETCDF_DATA_DIR:-/opt/geoserver/netcdf_data}
+      - /data/geoserver/grib_cache:${GRIB_CACHE_DIR:-/opt/geoserver/grib_cache}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+        max-file: "2"
 #    ports:
 #      - 8080:8080
     networks:

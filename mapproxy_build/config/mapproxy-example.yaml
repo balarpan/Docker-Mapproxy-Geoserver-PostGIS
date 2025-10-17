@@ -43,3 +43,10 @@ grids:
         base: GLOBAL_WEBMERCATOR
 
 globals:
+  cache:
+    base_dir: '/mapproxy/cache_data'
+    lock_dir: '/mapproxy/cache_data/cache_locks'
+  http:
+    client_timeout: 10
+  image:
+    resampling_method: bicubic
