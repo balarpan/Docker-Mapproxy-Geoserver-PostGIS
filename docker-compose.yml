@@ -71,6 +71,7 @@ services:
 
   geoserver:
     image: docker.osgeo.org/geoserver:2.28.x
+    #image: kartoza/geoserver
     container_name: geoserver
     depends_on:
       postgres:
@@ -79,7 +80,7 @@ services:
       - ./geoserver/geoserver.env
     environment:
       - INSTALL_EXTENSIONS=true
-      - STABLE_EXTENSIONS=monitor,pyramid,printing,metadata
+      - STABLE_EXTENSIONS=monitor,pyramid,printing,metadata,css
       - COMMUNITY_EXTENSIONS=monitor-micrometer
    # Ensure that you have same values in ./geoserver/geoserver.env file !!!
     volumes:
@@ -94,8 +95,14 @@ services:
       options:
         max-size: "1m"
         max-file: "2"
-#    ports:
-#      - 8080:8080
+    ports:
+      - 8080:8080
+    restart: on-failure
+    healthcheck:
+      test: curl --fail -s http://localhost:8080/ || exit 1
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
     networks:
       - gis-net
 
