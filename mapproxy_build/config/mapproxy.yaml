@@ -1,0 +1,171 @@
+services:
+  demo:
+  tms:
+    use_grid_names: true
+    # origin for /tiles service
+    origin: 'nw'
+  kml:
+      use_grid_names: true
+  wmts:
+  wms:
+    md:
+      title: MapProxy WMS Proxy
+
+layers:
+  - name: ows
+    title: ows
+    sources: [ows_cache]
+  - name: osm_overlay
+    title: OSM Overlay
+    sources: [osm_overlay_cache]
+  - name: topomap
+    title: Esri Topomap
+    sources: [topomap_cache]
+  - name: streetmap
+    title: Esri Streetmap
+    sources: [streetmap_cache]
+  # - name: ne_hillshade_layer
+  #   title: Earth Hillshade Low Res
+  #   sources: [ne_hillshade_cache]
+  - name: esri_world_imagery
+    title: Esri World Imagery
+    sources: [esri_world_imagery_cache]
+  - name: world_light_gray
+    title: World Light Gray
+    sources: [world_light_grey_cache]
+  - name: hillshade
+    title: Рельеф
+    #abstract: 3 arc second hillshading. Based on SRTM data, gaps filled with other sources by http://viewfinderpanoramas.org/dem3.html. Elevation data compiled and rendered to tiles by Netsyms Technologies (https://netsyms.com) and Skylar Ittner.
+    sources: [hillshade_cache]
+  - name: esri_hillshade
+    title: Esri Hillshade
+    sources: [esri_hillshade_cache]
+
+caches:
+  ows_cache:
+    grids: [webmercator]
+    sources: [ows]
+    meta_size: [1, 1]
+    cache:
+      type: mbtiles
+  osm_overlay_cache:
+    grids: [webmercator]
+    sources: [osm_overlay]
+    meta_size: [1, 1]
+    cache:
+      type: mbtiles
+  topomap_cache:
+    grids: [webmercator]
+    sources: [topomap_src]
+    link_single_color_images: true
+    cache:
+      type: mbtiles
+  streetmap_cache:
+    grids: [webmercator]
+    sources: [streetmap_src]
+    link_single_color_images: true
+    cache:
+      type: mbtiles
+  # ne_hillshade_cache:
+  #   sources: []
+  #   grids: [GLOBAL_MERCATOR]
+  #   cache:
+  #     type: mbtiles
+  #     filename: /mapproxy/cache_data/my_mbtiles/natural_earth_cross_blended_hypso_shaded_relief.raster.mbtiles
+  esri_world_imagery_cache:
+    sources: [esri_world_imagery_src]
+    grids: [webmercator]
+    format: image/png
+    link_single_color_images: true
+    cache:
+      type: mbtiles
+      #file_permissions: '666'
+      #directory_permissions: '777'
+  world_light_grey_cache:
+    sources: [world_light_grey_src]
+    grids: [webmercator]
+    format: image/png
+    link_single_color_images: true
+    cache:
+      type: mbtiles
+      #file_permissions: '666'
+      #directory_permissions: '777'
+  hillshade_cache:
+    sources: []
+    grids: [GLOBAL_MERCATOR]
+    cache:
+      type: mbtiles
+      filename: /mapproxy/cache_data/planet-hillshading_z1-10.mbtiles
+  esri_hillshade_cache:
+    sources: [esri_hillshade_src]
+    grids: [webmercator]
+    format: image/png
+    link_single_color_images: true
+    cache:
+      type: mbtiles
+      #file_permissions: '666'
+      #directory_permissions: '777'
+
+sources:
+  ows:
+    type: wms
+    req:
+      url: https://ows.terrestris.de/osm/service
+      layers: OSM-WMS
+  osm_overlay:
+    type: wms
+    req:
+      url: https://ows.terrestris.de/osm/service
+      layers: OSM-Overlay-WMS
+  topomap_src:
+    type: tile
+    grid: webmercator
+    url: https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/%(z)s/%(y)s/%(x)s
+    transparent: true
+  streetmap_src:
+    type: tile
+    grid: webmercator
+    url: https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/%(z)s/%(y)s/%(x)s
+    transparent: true
+  esri_world_imagery_src:
+    type: tile
+    grid: webmercator
+    url: http://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/%(z)s/%(y)s/%(x)s
+    concurrent_requests: 0
+    transparent: true
+  world_light_grey_src:
+    type: tile
+    grid: webmercator
+    url: https://services.arcgisonline.com/arcgis/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/%(z)s/%(y)s/%(x)s
+    concurrent_requests: 0
+    transparent: true
+  esri_hillshade_src:
+    type: tile
+    grid: webmercator
+    url: https://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer/tile/%(z)s/%(y)s/%(x)s
+    concurrent_requests: 0
+    transparent: true
+
+grids:
+  webmercator:
+    base: GLOBAL_WEBMERCATOR
+  osm_grid:
+    srs: EPSG:900913
+    origin: nw
+  gridmerc:
+    base: GLOBAL_MERCATOR
+    srs: EPSG:3857
+  google_grid:
+    base: GLOBAL_MERCATOR
+    origin: ul
+
+globals:
+  cache:
+    base_dir: '/mapproxy/cache_data'
+    lock_dir: '/mapproxy/cache_data/cache_locks'
+    minimize_meta_requests: true
+  http:
+    client_timeout: 10
+  image:
+    resampling_method: bicubic
+
