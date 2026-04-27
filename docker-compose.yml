@@ -57,18 +57,18 @@ services:
     # image: postgis/postgis
     # image: kartoza/postgis
     # image: imresamu/postgis
+    shm_size: '256mb' # Set shared memory to 256mb
     container_name: postgres
-    shm_size: '256mb' # Sets /dev/shm to 256mb for this service
     restart: on-failure
     healthcheck:
       test: /usr/bin/pg_isready -U postgres
-      interval: 5s
-      timeout: 10s
+      interval: 60s
+      timeout: 80s
       retries: 120
     env_file:
       - ./postgres/postgres.env
     volumes:
-      - /data/postgis:${PGDATA:-/var/lib/postgresql/data}:rw
+      - /data/postgres_data:${PGDATA:-/var/lib/postgresql/data}:rw
       - ./postgres/01-init-user.sh:/docker-entrypoint-initdb.d/01-init-user.sh
     ports:
       - "5432:5432"
