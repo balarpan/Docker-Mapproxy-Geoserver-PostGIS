@@ -7,6 +7,7 @@
 # geoserver - http://localhost/geoserver/ 
 #
 services:
+
   nginx:
     container_name: gis-nginx
     image: "nginx"
@@ -14,18 +15,18 @@ services:
      - ./nginx/nginx.env
     volumes:
      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-     - /data/www/html:${WWW_DIR:-/var/www/html/}
+     - /mnt/gisdata/www/html:${WWW_DIR:-/var/www/html/}
     logging:
       driver: json-file
       options:
-        max-size: 100m
-        max-file: '10'
+        max-size: 1m
+        max-file: '3'
     restart: always
     depends_on:
      - mapproxy
     ports:
-     - "80:80"
-     - "443:443"
+     - "18080:80"
+#     - "443:8443"
     networks:
      - gis-net
 
@@ -38,7 +39,8 @@ services:
       - ./mapproxy:/mapproxy/config
       # the cache_data folder needs to be writable for the container
       # this can be ensured by running `sudo chmod -R a+w cache_data`
-      - /data/mapproxy/cache_data/:/mapproxy/cache_data
+      # - /mnt/gisdata/mapproxy/cache_data/:/mapproxy/cache_data
+      - /data/gis/mapproxy/cache_data/:/mapproxy/cache_data
       # to use a logging config that differs from a default one, mount it to this location:
       # - ./mapproxy/logging.ini:/mapproxy/config/logging.ini
       # - ./mapproxy/nginx.conf:/etc/nginx/nginx.conf
@@ -51,8 +53,12 @@ services:
      - gis-net
 
   postgres:
-    image: postgis/postgis
+    image: postgis/postgis:17-3.6-alpine
+    # image: postgis/postgis
+    # image: kartoza/postgis
+    # image: imresamu/postgis
     container_name: postgres
+    shm_size: '256mb' # Sets /dev/shm to 256mb for this service
     restart: on-failure
     healthcheck:
       test: /usr/bin/pg_isready -U postgres
@@ -62,10 +68,10 @@ services:
     env_file:
       - ./postgres/postgres.env
     volumes:
-      - /data/geoserver/postgre_data:${PGDATA:-/var/lib/postgresql/data}:rw
+      - /data/postgis:${PGDATA:-/var/lib/postgresql/data}:rw
       - ./postgres/01-init-user.sh:/docker-entrypoint-initdb.d/01-init-user.sh
     ports:
-      - 5432
+      - "5432:5432"
     networks:
       - gis-net
 
@@ -84,12 +90,12 @@ services:
       - COMMUNITY_EXTENSIONS=monitor-micrometer
    # Ensure that you have same values in ./geoserver/geoserver.env file !!!
     volumes:
-      - /data/geoserver/logs:${GEOSERVER_LOG_DIR:-/opt/geoserver/logs}
-      - /data/geoserver/data_dir:${GEOSERVER_DATA_DIR:-/opt/geoserver/data_dir}
-      - /data/geoserver/gwc_config:${GEOWEBCACHE_CONFIG_DIR:-/opt/geoserver/gwc/config/}
-      - /data/geoserver/gwc:${GEOWEBCACHE_CACHE_DIR:-/opt/geoserver/gwc}
-      - /data/geoserver/netcfd:${NETCDF_DATA_DIR:-/opt/geoserver/netcdf_data}
-      - /data/geoserver/grib_cache:${GRIB_CACHE_DIR:-/opt/geoserver/grib_cache}
+      - /mnt/gisdata/geoserver/logs:${GEOSERVER_LOG_DIR:-/opt/geoserver/logs}
+      - /mnt/gisdata/geoserver/data_dir:${GEOSERVER_DATA_DIR:-/opt/geoserver/data_dir}
+      - /mnt/gisdata/geoserver/gwc_config:${GEOWEBCACHE_CONFIG_DIR:-/opt/geoserver/gwc/config/}
+      - /mnt/gisdata/geoserver/gwc:${GEOWEBCACHE_CACHE_DIR:-/opt/geoserver/gwc}
+      - /mnt/gisdata/geoserver/netcfd:${NETCDF_DATA_DIR:-/opt/geoserver/netcdf_data}
+      - /mnt/gisdata/geoserver/grib_cache:${GRIB_CACHE_DIR:-/opt/geoserver/grib_cache}
     logging:
       driver: "json-file"
       options:
