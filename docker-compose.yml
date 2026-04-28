@@ -61,10 +61,11 @@ services:
     container_name: postgres
     restart: on-failure
     healthcheck:
-      test: /usr/bin/pg_isready -U postgres
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 60s
-      timeout: 80s
-      retries: 120
+      timeout: 10s
+      retries: 5
+      start_period: 30s  # Grace period for initial startup/migration
     env_file:
       - ./postgres/postgres.env
     volumes:
