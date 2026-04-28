@@ -51,7 +51,10 @@ services:
      - gis-net
 
   postgres:
-    image: postgis/postgis
+    image: postgis/postgis:17-3.6-alpine
+    # image: postgis/postgis
+    # image: kartoza/postgis
+    # image: imresamu/postgis
     shm_size: '256mb' # Set shared memory to 256mb
     container_name: postgres
     restart: on-failure
