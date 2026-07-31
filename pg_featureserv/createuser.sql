@@ -1,0 +1,7 @@
+CREATE USER osmreader WITH PASSWORD 'osmreader';
+GRANT CONNECT ON DATABASE osm TO osmreader;
+GRANT USAGE ON SCHEMA public TO osmreader;
+GRANT USAGE ON SCHEMA o2pg TO osmreader;
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO osmreader;
+GRANT SELECT ON ALL TABLES IN SCHEMA o2pg TO osmreader;
+

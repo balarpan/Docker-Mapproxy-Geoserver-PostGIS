@@ -76,43 +76,65 @@ services:
     networks:
       - gis-net
 
-  geoserver:
-    image: docker.osgeo.org/geoserver:2.28.x
-    #image: kartoza/geoserver
-    container_name: geoserver
+  pg_featureserv:
+    image: pramsey/pg_featureserv
+    container_name: pg_featureserv
     depends_on:
       postgres:
         condition: service_healthy
     env_file:
-      - ./geoserver/geoserver.env
-    environment:
-      - INSTALL_EXTENSIONS=true
-      - STABLE_EXTENSIONS=monitor,pyramid,printing,metadata,css
-      - COMMUNITY_EXTENSIONS=monitor-micrometer
-   # Ensure that you have same values in ./geoserver/geoserver.env file !!!
+      - ./pg_featureserv/pg_featureserv.env
     volumes:
-      - /mnt/gisdata/geoserver/logs:${GEOSERVER_LOG_DIR:-/opt/geoserver/logs}
-      - /mnt/gisdata/geoserver/data_dir:${GEOSERVER_DATA_DIR:-/opt/geoserver/data_dir}
-      - /mnt/gisdata/geoserver/gwc_config:${GEOWEBCACHE_CONFIG_DIR:-/opt/geoserver/gwc/config/}
-      - /mnt/gisdata/geoserver/gwc:${GEOWEBCACHE_CACHE_DIR:-/opt/geoserver/gwc}
-      - /mnt/gisdata/geoserver/netcfd:${NETCDF_DATA_DIR:-/opt/geoserver/netcdf_data}
-      - /mnt/gisdata/geoserver/grib_cache:${GRIB_CACHE_DIR:-/opt/geoserver/grib_cache}
+      - ./pg_featureserv/pg_featureserv.toml:/config/pg_featureserv.toml
+      - ./pg_featureserv/map_script.gohtml:/assets/map_script.gohtml
     logging:
       driver: "json-file"
       options:
         max-size: "1m"
         max-file: "2"
     ports:
-      - 8080:8080
+      - 7000:7000
     restart: on-failure
-    healthcheck:
-      test: curl --fail -s http://localhost:8080/ || exit 1
-      interval: 1m30s
-      timeout: 10s
-      retries: 3
     networks:
       - gis-net
 
+  # geoserver:
+  #   image: docker.osgeo.org/geoserver:2.28.x
+  #   #image: kartoza/geoserver
+  #   container_name: geoserver
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #   env_file:
+  #     - ./geoserver/geoserver.env
+  #   environment:
+  #     - INSTALL_EXTENSIONS=true
+  #     - STABLE_EXTENSIONS=monitor,pyramid,printing,metadata,css
+  #     - COMMUNITY_EXTENSIONS=monitor-micrometer
+  #  # Ensure that you have same values in ./geoserver/geoserver.env file !!!
+  #   volumes:
+  #     - /mnt/gisdata/geoserver/logs:${GEOSERVER_LOG_DIR:-/opt/geoserver/logs}
+  #     - /mnt/gisdata/geoserver/data_dir:${GEOSERVER_DATA_DIR:-/opt/geoserver/data_dir}
+  #     - /mnt/gisdata/geoserver/gwc_config:${GEOWEBCACHE_CONFIG_DIR:-/opt/geoserver/gwc/config/}
+  #     - /mnt/gisdata/geoserver/gwc:${GEOWEBCACHE_CACHE_DIR:-/opt/geoserver/gwc}
+  #     - /mnt/gisdata/geoserver/netcfd:${NETCDF_DATA_DIR:-/opt/geoserver/netcdf_data}
+  #     - /mnt/gisdata/geoserver/grib_cache:${GRIB_CACHE_DIR:-/opt/geoserver/grib_cache}
+  #   logging:
+  #     driver: "json-file"
+  #     options:
+  #       max-size: "1m"
+  #       max-file: "2"
+  #   ports:
+  #     - 8080:8080
+  #   restart: on-failure
+  #   healthcheck:
+  #     test: curl --fail -s http://localhost:8080/ || exit 1
+  #     interval: 1m30s
+  #     timeout: 10s
+  #     retries: 3
+  #   networks:
+  #     - gis-net
+  #
 
 networks:
   gis-net:
