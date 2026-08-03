@@ -75,5 +75,5 @@ LimitMax = 10000
 [Website]
 # URL for the map view basemap
 # BasemapUrl = "https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png"
-BasemapUrl = "https://b.tile.openstreetmap.org/{z}/{x}/{y}.png"
+BasemapUrl = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}.png"
 
