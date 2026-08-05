@@ -62,9 +62,9 @@ WriteTimeoutSec = 30
 
 [Paging]
 # The default number of features in a response
-LimitDefault = 20
+LimitDefault = 100
 # Maxium number of features in a response
-LimitMax = 10000
+LimitMax = 30000
 
 [Metadata]
 # Title for this service
