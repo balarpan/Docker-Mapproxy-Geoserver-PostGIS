@@ -108,8 +108,8 @@ services:
     env_file: ./restapi/restapi.env
     volumes:
       - ./restapi/.venv/:/app/.venv
-      # - /data/restapi/miamap/restapi:${MIAMAP_RESTAPI_DIR:-/app/miamap/restapi}
-    # entrypoint: ["cd /app/miamap/restapi && uv init --no-package && uv add -r requirements.txt && uv run fastapi dev"]
+      - ./restapi/db:/app/db
+      - ./restapi/config:/app/config
     logging:
       # driver: "none"
       driver: "json-file"

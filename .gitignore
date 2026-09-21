@@ -4,3 +4,8 @@ mapproxy/
 __pycache__
 .venv
 
+# restapi
+restapi/db
+restapi/config/.env
+#restapi/miamap
+
