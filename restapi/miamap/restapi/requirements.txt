@@ -1,0 +1,11 @@
+pydantic
+pydantic-settings
+# for pydantic-settings EmailStr
+email-validator
+fastapi[standard]
+sqlalchemy>=2.0.0,<2.1.0
+psycopg[binary]>=3.2
+# python-jose[cryptography]
+# passlib[bcrypt]
+PyJWT
+pwdlib[argon2]

@@ -1,3 +1,6 @@
 mapproxy_cache_data/
 mapproxy/
 
+__pycache__
+.venv
+

@@ -1,0 +1,22 @@
+{
+  "app_name": "My Awesome API",
+  "db": {
+    "host": "tile-devel1.rian.off",
+    "port": 5432,
+    "database": "osm",
+    "user": "osmreader",
+    "upw": "osmreader",
+    "db_schema": "o2pg"
+  },
+  "auth": {
+    "SECRET_KEY": "a82c85559dd7fe377b6ea365acda62e1013bd86bd96677897fbf47d5d4cdf536",
+    "ALGORITHM": "HS256",
+    "ACCESS_TOKEN_EXPIRE_SECONDS": 900,
+    "REFRESH_TOKEN_EXPIRE_SECONDS": 86400,
+    "REFRESH_TOKEN_MIN_LIFESPAN_SECONDS": 7200,
+    "persist_users":[
+      {"nickname": "admin", "pwd": "321", "name": "Persistent Administrator", "comment": "System built-in Administrator", "role": ["admin"]},
+      {"nickname": "test", "pwd": "321", "name": "test user", "comment": "temp test user", "role": ["viewer"]}
+    ]
+  }
+}

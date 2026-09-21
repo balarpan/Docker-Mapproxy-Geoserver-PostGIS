@@ -1,0 +1,6 @@
+{
+  "db": {
+    "host": "minis.lan",
+    "port": 5432
+  }
+}

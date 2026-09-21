@@ -15,7 +15,8 @@ services:
      - ./nginx/nginx.env
     volumes:
      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-     - /mnt/gisdata/www/html:${WWW_DIR:-/var/www/html/}
+     # - /mnt/gisdata/www/html:${WWW_DIR:-/var/www/html/}
+     - /data/www/html:${WWW_DIR:-/var/www/html/}
     logging:
       driver: json-file
       options:
@@ -97,6 +98,38 @@ services:
     restart: on-failure
     networks:
       - gis-net
+
+  restapi:
+    # image: ghcr.io/astral-sh/uv:alpine
+    container_name: restapi
+    build:
+      context: restapi/
+      dockerfile: Dockerfile
+    env_file: ./restapi/restapi.env
+    volumes:
+      - ./restapi/.venv/:/app/.venv
+      # - /data/restapi/miamap/restapi:${MIAMAP_RESTAPI_DIR:-/app/miamap/restapi}
+    # entrypoint: ["cd /app/miamap/restapi && uv init --no-package && uv add -r requirements.txt && uv run fastapi dev"]
+    logging:
+      # driver: "none"
+      driver: "json-file"
+      options:
+        max-size: "1m"
+        max-file: "2"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8000
+    ports:
+      - "${PORT:-8078}:8000"
+    restart: on-failure
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 10s
+    # networks:
+    #   - gis-net
 
   # geoserver:
   #   image: docker.osgeo.org/geoserver:2.28.x
