@@ -107,7 +107,7 @@ services:
       dockerfile: Dockerfile
     env_file: ./restapi/restapi.env
     volumes:
-      - ./restapi/.venv/:/app/.venv
+      # - ./restapi/.venv/:/app/.venv
       - ./restapi/db:/app/db
       - ./restapi/config:/app/config
     logging:
@@ -120,7 +120,7 @@ services:
       - HOST=0.0.0.0
       - PORT=8000
     ports:
-      - "${PORT:-8078}:8000"
+      - "${PORT:-18078}:8000"
     restart: on-failure
     # healthcheck:
     #   test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
