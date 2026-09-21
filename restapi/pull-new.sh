@@ -1,22 +1,7 @@
 #!/usr/bin/env bash
 
-ENVFILE=restapi.env
-
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 cd "$SCRIPT_DIR"
-# set -a      # turn on automatic exporting
-# . "$ENVFILE"
-# set +a      # turn off automatic exporting
-
-# if [ -z ${GITHUB_USER+x} ]; then
-#   echo "You need to set var GITHUB_USER in file ${ENVFILE}"
-#   exit
-# fi
-# if [ -z ${GITHUB_TOKEN+x} ]; then
-#   echo "You need to set var GITHUB_TOKEN in file ${ENVFILE}"
-#   exit
-# fi
-# echo GITHUB_USER = ${GITHUB_USER}
 
 cd miamap
 git sparse-checkout reapply

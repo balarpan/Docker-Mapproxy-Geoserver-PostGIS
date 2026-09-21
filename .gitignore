@@ -5,7 +5,8 @@ __pycache__
 .venv
 
 # restapi
-restapi/db
-restapi/config/.env
-#restapi/miamap
+/restapi/db
+/restapi/config/.env
+/restapi/github.env
+/restapi/miamap
 
