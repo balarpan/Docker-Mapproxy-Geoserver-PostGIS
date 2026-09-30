@@ -31,6 +31,8 @@ echo GITHUB_USER = ${GITHUB_USER}
 mkdir -p config
 mkdir -p db
 
+cd "$SCRIPT_DIR"
+rm -rf ./miamap
 git clone --no-checkout https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com/balarpan/miamap.git
 cd miamap
 # git config core.sparseCheckoutCone false
@@ -43,6 +45,7 @@ git clean -fdx
 git gc --prune=now
 
 cd "$SCRIPT_DIR"
+rm -rf miamap/.git
 cp -rn ./miamap/restapi/config/* ./config/
 
 CONFENV=${SCRIPT_DIR%%/}/config/.env
