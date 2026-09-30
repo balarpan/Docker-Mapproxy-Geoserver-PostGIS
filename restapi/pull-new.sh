@@ -10,9 +10,11 @@ git pull
 cd "$SCRIPT_DIR"
 cp -rn ./miamap/restapi/config/* ./config/
 
-CONFENV=./config/.env
+CONFENV=${SCRIPT_DIR%%/}/config/.env
 if [ ! -f ${CONFENV} ]; then
   touch ${CONFENV}
   echo "# use 'openssl rand -hex 32' to generate strong key" >> ${CONFENV}
   echo "MIA__AUTH__SECRET_KEY=paste-your-secret-key-here" >> ${CONFENV}
+  echo "NEWSFEED_USER=your-newsfeed-user" >> ${CONFENV}
+  echo "NEWSFEED_PWD=your-newsfeed-pwd" >> ${CONFENV}
 fi
