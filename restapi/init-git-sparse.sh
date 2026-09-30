@@ -2,6 +2,10 @@
 
 ENVFILE=github.env
 
+if [ ! -f ${ENVFILE} ]; then
+  ECHO "You must create ${ENVFILE} with params GITHUB_USER and GITHUB_TOKEN to use this script"
+  exit 1
+fi
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 cd "$SCRIPT_DIR"
 # set -a      # turn on automatic exporting

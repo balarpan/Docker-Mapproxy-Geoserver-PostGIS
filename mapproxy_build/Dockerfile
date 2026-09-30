@@ -1,10 +1,10 @@
-FROM python:3.12-alpine AS base-libs
+FROM python:3.14-alpine AS base-libs
 
 ARG NGINX_VERSION=1.25.3
 ENV MAPPROXY_ALPINE=true
 
 RUN apk -U upgrade --update \
-    && apk add \
+    && apk add --no-cache \
       g++ \
       gdal \
       gdal-dev \
